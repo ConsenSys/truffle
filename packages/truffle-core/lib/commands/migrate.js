@@ -55,13 +55,16 @@ var command = {
     ]
   },
   run: function (options, done) {
+    var path = require("path");
     var Config = require("truffle-config");
     var Contracts = require("truffle-workflow-compile");
     var Resolver = require("truffle-resolver");
     var Artifactor = require("truffle-artifactor");
     var Migrate = require("truffle-migrate");
     var Environment = require("../environment");
+    var NPMDependencies = require("../npmdeps");
     var temp = require("temp");
+    var async = require("async");
     var copy = require("../copy");
 
     // Source: ethereum.stackexchange.com/questions/17051
@@ -79,40 +82,49 @@ var command = {
      61717561 // Aquachain
     ];
 
-
-    function setupDryRunEnvironmentThenRunMigrations(config) {
+    function setupDryRunEnvironmentAndRunAllMigrations(rootConfig, configs) {
       return new Promise((resolve, reject) => {
-        Environment.fork(config, function(err) {
+        Environment.fork(rootConfig, function(err) {
           if (err) return reject(err);
+
+          function cleanup() {
+            var args = arguments;
+
+            // Ensure directory cleanup.
+            temp.cleanup(function(err) {
+              (args.length && args[0] !== null)
+                ? reject(args[0])
+                : resolve();
+            });
+          };
 
           // Copy artifacts to a temporary directory
           temp.mkdir('migrate-dry-run-', function(err, temporaryDirectory) {
-            if (err) return reject(err);
+            if (err) return cleanup(err);
 
-            function cleanup() {
-              var args = arguments;
+            async.eachSeries(configs, function(config, cb2) {
+              // HACK: setup temporary directory like node_modules to help the NPM resolver out
+              //       This is also done in ./test.js
+              const targDir = config.packageName ?
+                path.join(temporaryDirectory, "node_modules", config.packageName, "build", "contracts") :
+                temporaryDirectory
 
-              // Ensure directory cleanup.
-              temp.cleanup(function(err) {
-                (args.length && args[0] !== null)
-                  ? reject(args[0])
-                  : resolve();
+              copy(config.contracts_build_directory, targDir, function(err) {
+                if (err) return cb2(err);
+
+                config.contracts_build_directory = targDir;
+
+                // Note: Create a new artifactor and resolver with the updated config.
+                // This is because the contracts_build_directory changed.
+                // Ideally we could architect them to be reactive of the config changes.
+                config.artifactor = new Artifactor(targDir);
+                config.resolver = new Resolver(config.with({
+                  node_modules_directory: path.join(temporaryDirectory, "node_modules")
+                }));
+
+                runMigrations(config, cb2);
               });
-            };
-
-            copy(config.contracts_build_directory, temporaryDirectory, function(err) {
-              if (err) return cleanup(err);
-
-              config.contracts_build_directory = temporaryDirectory;
-
-              // Note: Create a new artifactor and resolver with the updated config.
-              // This is because the contracts_build_directory changed.
-              // Ideally we could architect them to be reactive of the config changes.
-              config.artifactor = new Artifactor(temporaryDirectory);
-              config.resolver = new Resolver(config);
-
-              runMigrations(config, cleanup);
-            });
+            }, cleanup);
           });
         });
       });
@@ -122,7 +134,7 @@ var command = {
       Migrate.launchReporter();
 
       if (options.f) {
-        Migrate.runFrom(options.f, config, done);
+        Migrate.runFrom(options.f, config, callback);
       } else {
         Migrate.needsMigrating(config, function(err, needsMigrating) {
           if (err) return callback(err);
@@ -130,14 +142,14 @@ var command = {
           if (needsMigrating) {
             Migrate.run(config, callback);
           } else {
-            config.logger.log("Network up to date.");
+            logger.log("Network up to date.")
             callback();
           }
         });
       }
     };
 
-    async function executePostDryRunMigration(buildDir){
+    async function executePostDryRunMigration(config, buildDir, callback){
       let accept = true;
 
       if (options.interactive){
@@ -155,29 +167,35 @@ var command = {
 
         environment.detect(config, function(err) {
           config.dryRun = false;
-          runMigrations(config, done);
+          runMigrations(config, callback);
         });
       } else {
-        done();
+        callback();
       }
     }
 
-    const conf = Config.detect(options);
+    var rootConfig = Config.detect(options);
+    var logger = rootConfig.logger;
 
-    Contracts.compile(conf, function(err) {
+    var migrationConfigs = NPMDependencies.detect(rootConfig, options);
+
+    async.eachSeries(migrationConfigs, Environment.detect, function(err) {
       if (err) return done(err);
 
-      Environment.detect(conf, async function(err) {
+      async.eachSeries(migrationConfigs, function(config, callback) {
+        // async's introspection trips on Contracts.compile's variate signature
+        // so we explicitly pass through these params
+        Contracts.compile(config, callback);
+      }, async function(err) {
         if (err) return done(err);
 
         var dryRun = options.dryRun === true;
-        var production = networkWhitelist.includes(conf.network_id) || conf.production;
+        var production = networkWhitelist.includes(rootConfig.network_id) || rootConfig.production;
 
         // Dry run only
         if (dryRun) {
-
           try {
-            await setupDryRunEnvironmentThenRunMigrations(conf);
+            await setupDryRunEnvironmentAndRunAllMigrations(rootConfig, migrationConfigs);
             done();
           } catch(err){
             done(err);
@@ -186,24 +204,27 @@ var command = {
         // Production: dry-run then real run
         } else if (production && !conf.skipDryRun) {
 
-          const currentBuild = conf.contracts_build_directory;
-          conf.dryRun = true;
+          const currentBuild = rootConfig.contracts_build_directory;
+          rootConfig.dryRun = true;
 
           try {
-            await setupDryRunEnvironmentThenRunMigrations(conf);
+            await setupDryRunEnvironmentAndRunAllMigrations(rootConfig, migrationConfigs);
           } catch(err){
             return done(err);
           };
 
-          executePostDryRunMigration(currentBuild);
+          async.eachSeries(migrationConfigs, function(config, callback){
+            executePostDryRunMigration(config, currentBuild, callback);
+          }, done);
 
         // Development
         } else {
-          runMigrations(conf, done);
+          async.eachSeries(migrationConfigs, runMigrations, done);
         }
       });
     });
   }
 };
+
 
 module.exports = command;
