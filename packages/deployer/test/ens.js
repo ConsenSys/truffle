@@ -1,7 +1,7 @@
 const Web3 = require("web3");
 const { sha3 } = Web3.utils;
 const assert = require("assert");
-const Ganache = require("ganache-core");
+const Ganache = require("ganache");
 const ENS = require("../ens");
 const sinon = require("sinon");
 const ENSJS = require("ethereum-ens");
@@ -31,14 +31,12 @@ describe("ENS class", () => {
       port: "8545",
       host: "127.0.0.1"
     });
-    provider = new Ganache.provider(providerOptions);
+    provider = Ganache.provider(providerOptions);
   });
-  after(done => {
+  after(async () => {
     if (server) {
-      server.close(() => {
-        server = null;
-        done();
-      });
+      await server.close();
+      server = null;
     }
   });
   beforeEach(async () => {

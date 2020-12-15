@@ -1,4 +1,4 @@
-const ganache = require("ganache-core");
+const ganache = require("ganache");
 const Web3 = require("web3");
 const assert = require("assert");
 const Reporter = require("@truffle/reporters").migrationsV5;
@@ -20,7 +20,9 @@ describe("Error cases", function() {
   let UsesLibrary;
 
   const provider = ganache.provider({
-    vmErrorsOnRPCResponse: false
+    legacyInstamine: true,
+    vmErrorsOnRPCResponse: false,
+    gasLimit: "0x6691b7"
   });
 
   const mockMigration = {

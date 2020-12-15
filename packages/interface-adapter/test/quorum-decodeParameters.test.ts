@@ -4,7 +4,7 @@ import assert from "assert";
 import { Server } from "http";
 
 import Web3 from "web3";
-import Ganache from "ganache-core";
+import Ganache from "ganache";
 
 import { Web3Shim } from "../lib";
 
@@ -33,23 +33,17 @@ const emptyByte = "";
 
 describe("Quorum decodeParameters Overload", function() {
   it("decodes an empty byte to a '0' string value w/ quorum=true", async function() {
-    return new Promise(async (resolve, reject) => {
-      let preparedGanache;
-      try {
-        preparedGanache = await prepareGanache(true);
-        const result = await preparedGanache.web3Shim.eth.abi.decodeParameters(
-          expectedOutput,
-          emptyByte
-        );
-        assert(result);
-        assert(result.retVal === "0");
-        preparedGanache.server.close(resolve);
-      } catch (e) {
-        preparedGanache.server.close(() => {
-          reject(e);
-        });
-      }
-    });
+    const preparedGanache = await prepareGanache(true);
+    try {
+      const result = preparedGanache.web3Shim.eth.abi.decodeParameters(
+        expectedOutput,
+        emptyByte
+      );
+      assert(result);
+      assert(result.retVal === "0");
+    } finally {
+      await preparedGanache.server.close();
+    }
   });
 
   // ganache-core uses web3@1.0.0-beta.35 which doesn't include the 'Out of Gas?' decoder guard!
@@ -64,11 +58,9 @@ describe("Quorum decodeParameters Overload", function() {
             emptyByte
           );
         });
-        preparedGanache.server.close(resolve);
+        preparedGanache.server.close().then(() => resolve());
       } catch (e) {
-        preparedGanache.server.close(() => {
-          reject(e);
-        });
+        preparedGanache.server.close().then(() => reject(2));
       }
     });
   });

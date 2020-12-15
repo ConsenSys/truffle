@@ -2,7 +2,7 @@
 require("source-map-support/register");
 
 const IPC = require("node-ipc").IPC;
-const Ganache = require("ganache-core/public-exports");
+const Ganache = require("ganache");
 const path = require("path");
 const debug = require("debug");
 
@@ -34,6 +34,10 @@ try {
 }
 
 options.time = options.time ? new Date(options.time) : new Date();
+
+options.vmErrorsOnRPCResponse = "vmErrorsOnRPCResponse" in options ? options.vmErrorsOnRPCResponse : true;
+
+options.legacyInstamine = "legacyInstamine" in options ? options.legacyInstamine : true;
 
 /*
  * Logging

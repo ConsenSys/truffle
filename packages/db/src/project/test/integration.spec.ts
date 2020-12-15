@@ -6,7 +6,7 @@ import { generateId } from "@truffle/db/meta";
 import Migrate from "@truffle/migrate";
 import { Environment } from "@truffle/environment";
 import Config from "@truffle/config";
-import Ganache from "ganache-core";
+import Ganache from "ganache";
 import Web3 from "web3";
 import * as fse from "fs-extra";
 import * as tmp from "tmp";
@@ -20,9 +20,9 @@ beforeAll(async done => {
   server.listen(port, done);
 });
 
-afterAll(async done => {
+afterAll(async () => {
   tempDir.removeCallback();
-  setTimeout(() => server.close(done), 500);
+  await server.close();
 });
 
 // mocking the truffle-workflow-compile to avoid jest timing issues
