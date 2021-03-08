@@ -32,7 +32,7 @@ describe("Happy path (truffle unbox)", function() {
   });
 
   it("will compile", async function() {
-    this.timeout(20000);
+    this.timeout(60000);
 
     await CommandRunner.run("compile", config);
 
@@ -71,7 +71,7 @@ describe("Happy path (truffle unbox)", function() {
     var promises = [];
 
     [MetaCoin, ConvertLib, Migrations].forEach(function(abstraction) {
-      abstraction.setProvider(config.provider);
+      abstraction.setProvider({ provider: config.provider });
 
       promises.push(
         abstraction.deployed().then(function(instance) {

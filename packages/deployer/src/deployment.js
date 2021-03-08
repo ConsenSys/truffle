@@ -290,6 +290,7 @@ class Deployment {
 
       const isDeployed = contract.isDeployed();
       const newArgs = await Promise.all(args);
+
       const currentBlock = await contract.interfaceAdapter.getBlock("latest");
 
       // Last arg can be an object that tells us not to overwrite.
@@ -329,6 +330,11 @@ class Deployment {
         } catch (err) {
           eventArgs.estimateError = err;
         }
+
+        /**
+         * Required as this sets the wallet for each migration
+         */
+        tezos && (await contract.interfaceAdapter.setWallet(self));
 
         // Emit `preDeploy` & send transaction
         await self.emitter.emit("preDeploy", eventArgs);

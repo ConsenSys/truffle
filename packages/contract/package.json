@@ -20,7 +20,8 @@
   },
   "typings": "./typings/index.d.ts",
   "dependencies": {
-    "@taquito/taquito": "6.3.3-beta.0",
+    "@taquito/signer": "^8.0.6-beta.0",
+    "@taquito/taquito": "^8.0.6-beta.0",
     "@truffle/blockchain-utils": "^0.1.0-tezos.1",
     "@truffle/contract-schema": "3.2.0-tezos.1",
     "@truffle/error": "^0.1.0-tezos.0",
@@ -40,7 +41,7 @@
     "browserify": "^14.0.0",
     "chai": "4.2.0",
     "debug": "^4.1.0",
-    "ganache-core": "2.11.0-tezos.2",
+    "ganache-core": "2.13.2-tezos.2",
     "mocha": "5.2.0",
     "sinon": "^7.3.2",
     "temp": "^0.8.3",
