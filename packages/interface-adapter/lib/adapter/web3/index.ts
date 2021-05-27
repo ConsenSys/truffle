@@ -13,9 +13,11 @@ export interface Web3InterfaceAdapterOptions {
 
 export class Web3InterfaceAdapter implements InterfaceAdapter {
   public web3: Web3Shim;
+  public networkType: string;
 
   constructor({ provider, networkType }: Web3InterfaceAdapterOptions = {}) {
     this.web3 = new Web3Shim({ provider, networkType });
+    this.networkType = networkType;
   }
 
   public getNetworkId() {
@@ -52,5 +54,13 @@ export class Web3InterfaceAdapter implements InterfaceAdapter {
 
   public getBlockNumber() {
     return this.web3.eth.getBlockNumber();
+  }
+
+  public getSymbol() {
+    if (this.networkType === "rsk"){
+      return "R-BTC";
+    }
+
+    return "ETH";
   }
 }
