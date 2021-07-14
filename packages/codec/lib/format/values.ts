@@ -35,6 +35,7 @@ import {
   ContractValueInfoKnown,
   ContractValueInfoUnknown
 } from "./elementary";
+import { Config, DefaultConfig } from "./config";
 import * as Common from "@truffle/codec/common";
 import * as Abi from "@truffle/abi-utils";
 
@@ -49,31 +50,33 @@ export * from "./elementary";
  *
  * @Category General categories
  */
-export type Result =
-  | ElementaryResult
-  | ArrayResult
-  | MappingResult
-  | StructResult
-  | TupleResult
-  | MagicResult
-  | TypeResult
-  | FunctionExternalResult
-  | FunctionInternalResult;
+export type Result<
+  C extends Config = DefaultConfig
+> =
+  | ElementaryResult<C>
+  | ArrayResult<C>
+  | MappingResult<C>
+  | StructResult<C>
+  | TupleResult<C>
+  | MagicResult<C>
+  | TypeResult<C>
+  | FunctionExternalResult<C>
+  | FunctionInternalResult<C>;
 /**
  * An actual value, not an error (although if a container type it may contain errors!)
  *
  * @Category General categories
  */
-export type Value =
-  | ElementaryValue
-  | ArrayValue
-  | MappingValue
-  | StructValue
-  | TupleValue
-  | MagicValue
-  | TypeValue
-  | FunctionExternalValue
-  | FunctionInternalValue;
+export type Value<C extends Config = DefaultConfig> =
+  | ElementaryValue<C>
+  | ArrayValue<C>
+  | MappingValue<C>
+  | StructValue<C>
+  | TupleValue<C>
+  | MagicValue<C>
+  | TypeValue<C>
+  | FunctionExternalValue<C>
+  | FunctionInternalValue<C>;
 
 /*
  * SECTION 2: Built-in elementary types
@@ -88,91 +91,109 @@ export type Value =
  *
  * @Category General categories
  */
-export type ElementaryResult =
-  | UintResult
-  | IntResult
-  | BoolResult
-  | BytesResult
-  | AddressResult
-  | StringResult
-  | FixedResult
-  | UfixedResult
-  | EnumResult
-  | ContractResult;
+export type ElementaryResult<
+  C extends Config = DefaultConfig
+> =
+  | UintResult<C>
+  | IntResult<C>
+  | BoolResult<C>
+  | BytesResult<C>
+  | AddressResult<C>
+  | StringResult<C>
+  | FixedResult<C>
+  | UfixedResult<C>
+  | EnumResult<C>
+  | ContractResult<C>;
 
 /**
  * A bytestring value or error (static or dynamic)
  *
  * @Category Elementary types
  */
-export type BytesResult = BytesStaticResult | BytesDynamicResult;
+export type BytesResult<
+  C extends Config = DefaultConfig
+> = BytesStaticResult<C> | BytesDynamicResult<C>;
 
 /**
  * An unsigned integer value or error
  *
  * @Category Elementary types
  */
-export type UintResult = UintValue | Errors.UintErrorResult;
+export type UintResult<
+  C extends Config = DefaultConfig
+> = UintValue<C> | Errors.UintErrorResult<C>;
 
 /**
  * A signed integer value or error
  *
  * @Category Elementary types
  */
-export type IntResult = IntValue | Errors.IntErrorResult;
+export type IntResult<
+  C extends Config = DefaultConfig
+> = IntValue<C> | Errors.IntErrorResult<C>;
 
 /**
  * A boolean value or error
  *
  * @Category Elementary types
  */
-export type BoolResult = BoolValue | Errors.BoolErrorResult;
+export type BoolResult<
+  C extends Config = DefaultConfig
+> = BoolValue<C> | Errors.BoolErrorResult<C>;
 
 /**
  * A bytestring value or error (static-length)
  *
  * @Category Elementary types
  */
-export type BytesStaticResult =
-  | BytesStaticValue
-  | Errors.BytesStaticErrorResult;
+export type BytesStaticResult<
+  C extends Config = DefaultConfig
+> = BytesStaticValue<C> | Errors.BytesStaticErrorResult<C>;
 
 /**
  * A bytestring value or error (dynamic-length)
  *
  * @Category Elementary types
  */
-export type BytesDynamicResult =
-  | BytesDynamicValue
-  | Errors.BytesDynamicErrorResult;
+export type BytesDynamicResult<
+  C extends Config = DefaultConfig
+> = BytesDynamicValue<C> | Errors.BytesDynamicErrorResult<C>;
 
 /**
  * An address value or error
  *
  * @Category Elementary types
  */
-export type AddressResult = AddressValue | Errors.AddressErrorResult;
+export type AddressResult<
+  C extends Config = DefaultConfig
+> = AddressValue<C> | Errors.AddressErrorResult<C>;
 
 /**
  * A string value or error
  *
  * @Category Elementary types
  */
-export type StringResult = StringValue | Errors.StringErrorResult;
+export type StringResult<
+  C extends Config = DefaultConfig
+> = StringValue<C> | Errors.StringErrorResult<C>;
 
 /**
  * A signed fixed-point value or error
  *
  * @Category Elementary types
  */
-export type FixedResult = FixedValue | Errors.FixedErrorResult;
+export type FixedResult<
+  C extends Config = DefaultConfig
+> = FixedValue<C> | Errors.FixedErrorResult<C>;
 
 /**
  * An unsigned fixed-point value or error
  *
  * @Category Elementary types
  */
-export type UfixedResult = UfixedValue | Errors.UfixedErrorResult;
+export type UfixedResult<
+  C extends Config = DefaultConfig
+> = UfixedValue<C> | Errors.UfixedErrorResult<C>;
 
 /*
  * SECTION 3: User-defined elementary types
@@ -183,14 +204,18 @@ export type UfixedResult = UfixedValue | Errors.UfixedErrorResult;
  *
  * @Category User-defined elementary types
  */
-export type EnumResult = EnumValue | Errors.EnumErrorResult;
+export type EnumResult<
+  C extends Config = DefaultConfig
+> = EnumValue<C> | Errors.EnumErrorResult<C>;
 
 /**
  * A contract value or error
  *
  * @Category User-defined elementary types
  */
-export type ContractResult = ContractValue | Errors.ContractErrorResult;
+export type ContractResult<
+  C extends Config = DefaultConfig
+> = ContractValue<C> | Errors.ContractErrorResult<C>;
 
 /*
  * SECTION 4: Container types (including magic)
@@ -201,21 +226,25 @@ export type ContractResult = ContractValue | Errors.ContractErrorResult;
  *
  * @Category Container types
  */
-export type ArrayResult = ArrayValue | Errors.ArrayErrorResult;
+export type ArrayResult<
+  C extends Config = DefaultConfig
+> = ArrayValue<C> | Errors.ArrayErrorResult<C>;
 
 /**
  * An array value (may contain errors!)
  *
  * @Category Container types
  */
-export interface ArrayValue {
-  type: Types.ArrayType;
+export interface ArrayValue<
+  C extends Config = DefaultConfig
+> {
+  type: Types.ArrayType<C>;
   kind: "value";
   /**
    * will be used in the future for circular vales
    */
   reference?: number;
-  value: Result[];
+  value: Result<C>[];
 }
 
 /**
@@ -223,27 +252,33 @@ export interface ArrayValue {
  *
  * @Category Container types
  */
-export type MappingResult = MappingValue | Errors.MappingErrorResult;
+export type MappingResult<
+  C extends Config = DefaultConfig
+> = MappingValue<C> | Errors.MappingErrorResult<C>;
 
 /**
  * A mapping value (may contain errors!)
  *
  * @Category Container types
  */
-export interface MappingValue {
-  type: Types.MappingType;
+export interface MappingValue<
+  C extends Config = DefaultConfig
+> {
+  type: Types.MappingType<C>;
   kind: "value";
   //note that since mappings live in storage, a circular
   //mapping is impossible
   /**
    * order is irrelevant; also note keys must be values, not errors
    */
-  value: KeyValuePair[];
+  value: KeyValuePair<C>[];
 }
 
-export interface KeyValuePair {
-  key: ElementaryValue; //note must be a value, not an error!
-  value: Result;
+export interface KeyValuePair<
+  C extends Config = DefaultConfig
+> {
+  key: ElementaryValue<C>; //note must be a value, not an error!
+  value: Result<C>;
 }
 
 /**
@@ -251,15 +286,19 @@ export interface KeyValuePair {
  *
  * @Category Container types
  */
-export type StructResult = StructValue | Errors.StructErrorResult;
+export type StructResult<
+  C extends Config = DefaultConfig
+> = StructValue<C> | Errors.StructErrorResult<C>;
 
 /**
  * A struct value (may contain errors!)
  *
  * @Category Container types
  */
-export interface StructValue {
-  type: Types.StructType;
+export interface StructValue<
+  C extends Config = DefaultConfig
+> {
+  type: Types.StructType<C>;
   kind: "value";
   /**
    * will be used in the future for circular vales
@@ -270,12 +309,14 @@ export interface StructValue {
    * moreover, any mappings *must* be included, even
    * if this is a memory struct (such mappings will be empty)
    */
-  value: NameValuePair[];
+  value: NameValuePair<C>[];
 }
 
-export interface NameValuePair {
+export interface NameValuePair<
+  C extends Config = DefaultConfig
+> {
   name: string;
-  value: Result;
+  value: Result<C>;
 }
 
 /**
@@ -283,22 +324,28 @@ export interface NameValuePair {
  *
  * @Category Container types
  */
-export type TupleResult = TupleValue | Errors.TupleErrorResult;
+export type TupleResult<
+  C extends Config = DefaultConfig
+> = TupleValue<C> | Errors.TupleErrorResult<C>;
 
 /**
  * A tuple value (may contain errors!)
  *
  * @Category Container types
  */
-export interface TupleValue {
-  type: Types.TupleType;
+export interface TupleValue<
+  C extends Config = DefaultConfig
+> {
+  type: Types.TupleType<C>;
   kind: "value";
-  value: OptionallyNamedValue[];
+  value: OptionallyNamedValue<C>[];
 }
 
-export interface OptionallyNamedValue {
+export interface OptionallyNamedValue<
+  C extends Config = DefaultConfig
+> {
   name?: string;
-  value: Result;
+  value: Result<C>;
 }
 
 /**
@@ -306,19 +353,23 @@ export interface OptionallyNamedValue {
  *
  * @Category Special container types (debugger-only)
  */
-export type MagicResult = MagicValue | Errors.MagicErrorResult;
+export type MagicResult<
+  C extends Config = DefaultConfig
+> = MagicValue<C> | Errors.MagicErrorResult<C>;
 
 /**
  * A magic variable's value (may contain errors?)
  *
  * @Category Special container types (debugger-only)
  */
-export interface MagicValue {
-  type: Types.MagicType;
+export interface MagicValue<
+  C extends Config = DefaultConfig
+> {
+  type: Types.MagicType<C>;
   kind: "value";
   //a magic variable can't be circular, duh!
   value: {
-    [field: string]: Result;
+    [field: string]: Result<C>;
   };
 }
 
@@ -328,7 +379,9 @@ export interface MagicValue {
  *
  * @Category Special container types (debugger-only)
  */
-export type TypeResult = TypeValue | Errors.TypeErrorResult;
+export type TypeResult<
+  C extends Config = DefaultConfig
+> = TypeValue<C> | Errors.TypeErrorResult<C>;
 
 /**
  * A type's value -- for now, we consider the value of a contract type to
@@ -338,20 +391,24 @@ export type TypeResult = TypeValue | Errors.TypeErrorResult;
  *
  * @Category Special container types (debugger-only)
  */
-export type TypeValue = TypeValueContract | TypeValueEnum;
+export type TypeValue<
+  C extends Config = DefaultConfig
+> = TypeValueContract<C> | TypeValueEnum<C>;
 
 /**
  * A contract type's value (see [[TypeValue]])
  *
  * @Category Special container types (debugger-only)
  */
-export interface TypeValueContract {
+export interface TypeValueContract<
+  C extends Config = DefaultConfig
+> {
   type: Types.TypeTypeContract;
   kind: "value";
   /**
    * these must be stored in order!
    */
-  value: NameValuePair[];
+  value: NameValuePair<C>[];
 }
 
 /**
@@ -359,13 +416,15 @@ export interface TypeValueContract {
  *
  * @Category Special container types (debugger-only)
  */
-export interface TypeValueEnum {
+export interface TypeValueEnum<
+  C extends Config = DefaultConfig
+> {
   type: Types.TypeTypeEnum;
   kind: "value";
   /**
    * these must be stored in order!
    */
-  value: EnumValue[];
+  value: EnumValue<C>[];
 }
 
 /*
@@ -377,19 +436,21 @@ export interface TypeValueEnum {
  *
  * @Category Function types
  */
-export type FunctionExternalResult =
-  | FunctionExternalValue
-  | Errors.FunctionExternalErrorResult;
+export type FunctionExternalResult<
+  C extends Config = DefaultConfig
+> = FunctionExternalValue<C> | Errors.FunctionExternalErrorResult<C>;
 
 /**
  * An external function pointer value; see [[FunctionExternalValueInfo]] for more detail
  *
  * @Category Function types
  */
-export interface FunctionExternalValue {
-  type: Types.FunctionExternalType;
+export interface FunctionExternalValue<
+  C extends Config = DefaultConfig
+> {
+  type: Types.FunctionExternalType<C>;
   kind: "value";
-  value: FunctionExternalValueInfo;
+  value: FunctionExternalValueInfo<C>;
 }
 
 /**
@@ -400,9 +461,11 @@ export interface FunctionExternalValue {
  *
  * @Category Function types
  */
-export type FunctionExternalValueInfo =
-  | FunctionExternalValueInfoKnown //known function of known class
-  | FunctionExternalValueInfoInvalid //known class, but can't locate function
+export type FunctionExternalValueInfo<
+  C extends Config = DefaultConfig
+> =
+  | FunctionExternalValueInfoKnown<C> //known function of known class
+  | FunctionExternalValueInfoInvalid<C> //known class, but can't locate function
   | FunctionExternalValueInfoUnknown; //can't determine class
 
 /**
@@ -410,9 +473,11 @@ export type FunctionExternalValueInfo =
  *
  * @Category Function types
  */
-export interface FunctionExternalValueInfoKnown {
+export interface FunctionExternalValueInfoKnown<
+  C extends Config = DefaultConfig
+> {
   kind: "known";
-  contract: ContractValueInfoKnown;
+  contract: ContractValueInfoKnown<C>;
   /**
    * formatted as a hex string
    */
@@ -426,9 +491,11 @@ export interface FunctionExternalValueInfoKnown {
  *
  * @Category Function types
  */
-export interface FunctionExternalValueInfoInvalid {
+export interface FunctionExternalValueInfoInvalid<
+  C extends Config = DefaultConfig
+> {
   kind: "invalid";
-  contract: ContractValueInfoKnown;
+  contract: ContractValueInfoKnown<C>;
   /**
    * formatted as a hex string
    */
@@ -458,19 +525,21 @@ export interface FunctionExternalValueInfoUnknown {
  *
  * @Category Function types
  */
-export type FunctionInternalResult =
-  | FunctionInternalValue
-  | Errors.FunctionInternalErrorResult;
+export type FunctionInternalResult<
+  C extends Config = DefaultConfig
+> = FunctionInternalValue<C> | Errors.FunctionInternalErrorResult<C>;
 
 /**
  * An internal function pointer value; see [[FunctionInternalValueInfo]] for more detail
  *
  * @Category Function types
  */
-export interface FunctionInternalValue {
-  type: Types.FunctionInternalType;
+export interface FunctionInternalValue<
+  C extends Config = DefaultConfig
+> {
+  type: Types.FunctionInternalType<C>;
   kind: "value";
-  value: FunctionInternalValueInfo;
+  value: FunctionInternalValueInfo<C>;
 }
 
 /**
@@ -481,26 +550,30 @@ export interface FunctionInternalValue {
  *
  * @Category Function types
  */
-export type FunctionInternalValueInfo =
-  | FunctionInternalValueInfoKnown //actual function
-  | FunctionInternalValueInfoException //default value
-  | FunctionInternalValueInfoUnknown; //decoding not supported in this context
+export type FunctionInternalValueInfo<
+  C extends Config = DefaultConfig
+> =
+  | FunctionInternalValueInfoKnown<C> //actual function
+  | FunctionInternalValueInfoException<C> //default value
+  | FunctionInternalValueInfoUnknown<C>; //decoding not supported in this context
 
 /**
  * This type of FunctionInternalValueInfo is used for an actual internal function.
  *
  * @Category Function types
  */
-export interface FunctionInternalValueInfoKnown {
+export interface FunctionInternalValueInfoKnown<
+  C extends Config = DefaultConfig
+> {
   kind: "function";
-  context: Types.ContractType;
+  context: Types.ContractType<C>;
   deployedProgramCounter: number;
   constructorProgramCounter: number;
   name: string;
   /**
    * Is null for a free function
    */
-  definedIn: Types.ContractType | null;
+  definedIn: Types.ContractType<C> | null;
   /**
    * An internal opaque ID
    */
@@ -517,9 +590,11 @@ export interface FunctionInternalValueInfoKnown {
  *
  * @Category Function types
  */
-export interface FunctionInternalValueInfoException {
+export interface FunctionInternalValueInfoException<
+  C extends Config = DefaultConfig
+> {
   kind: "exception";
-  context: Types.ContractType;
+  context: Types.ContractType<C>;
   deployedProgramCounter: number;
   constructorProgramCounter: number;
 }
@@ -538,9 +613,11 @@ export interface FunctionInternalValueInfoException {
  *
  * @Category Function types
  */
-export interface FunctionInternalValueInfoUnknown {
+export interface FunctionInternalValueInfoUnknown<
+  C extends Config = DefaultConfig
+> {
   kind: "unknown";
-  context: Types.ContractType;
+  context: Types.ContractType<C>;
   deployedProgramCounter: number;
   constructorProgramCounter: number;
 }
